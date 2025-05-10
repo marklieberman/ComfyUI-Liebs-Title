@@ -24,14 +24,16 @@ The tab title may contain placeholder variables with the format `%variableName%`
 | :---- | :---- |
 | `%title%` | The original title before formatting by ComfyUI-Liebs-Title |
 
-#### Simple variable
+#### Setting a Variable
 
 When the prompt is executed, the variable `%prefix%` will be populated with value `Shirt:`.
+
 <img src="./docs/images/set-variable-simple.png"/>
 
-#### Regular expression capturing groups variables
+#### Setting Variables with Regular Expression Capturing Groups
 
-Capturing groups from the regular expression will be mapped variables. When the following prompt is executed, the variables `%color%` and `%garment%` will be populated with values `Red` and `TShirt`.
+Capturing groups from the regular expression will be mapped to variables. Specify the comma separated variable names in the same order as the capturing groups. When the following prompt is executed, the variables `%color%` and `%garment%` will be populated with values `Red` and `TShirt`.
+
 <img src="./docs/images/set-variable-regex.png"/>
 
 ## Example Tab Title Formats
