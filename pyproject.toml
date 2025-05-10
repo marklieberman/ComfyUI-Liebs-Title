@@ -1,0 +1,14 @@
+[project]
+name = "liebs-title"
+description = "An extension to modify the browser tab title when running ComfyUI workflows."
+version = "1.0.0"
+license = {file = "LICENSE"}
+
+[project.urls]
+Repository = "https://github.com/marklieberman/ComfyUI-Liebs-Title"
+#  Used by Comfy Registry https://comfyregistry.org
+
+[tool.comfy]
+PublisherId = "markliebs"
+DisplayName = "ComfyUI-Liebs-Title"
+Icon = "https://raw.githubusercontent.com/marklieberman/ComfyUI-Liebs-Title/refs/heads/main/comfy-icon.png"
