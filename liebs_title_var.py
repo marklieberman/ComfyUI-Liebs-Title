@@ -34,7 +34,7 @@ class LiebsTitleVar():
     CATEGORY = "notify"
     OUTPUT_NODE = True
 
-    def IS_CHANGED(name, value, regex):
+    def IS_CHANGED(name, value, regex, title_tab_id):
         return float("NaN")
 
     def match_vars(self, name, value, regex):
