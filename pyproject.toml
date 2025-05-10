@@ -1,7 +1,7 @@
 [project]
 name = "liebs-title"
 description = "An extension to modify the browser tab title when running ComfyUI workflows."
-version = "1.0.1"
+version = "1.0.2"
 license = {file = "LICENSE"}
 
 [project.urls]
