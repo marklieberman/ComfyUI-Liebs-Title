@@ -23,6 +23,9 @@ class LiebsTitleVar():
             },
             "optional": {
                 "regex": ("STRING",),
+            },
+            "hidden": {
+                "title_tab_id": ("STRING",)
             }
         }
 
@@ -55,11 +58,14 @@ class LiebsTitleVar():
         except re.error:
             raise ValueError("Invalid regular expression!")
         
-    def func(self, name, value, regex):
+    def func(self, name, value, regex, title_tab_id):
         if regex:
             var_dict = self.match_vars(name, value, regex)
         else:
             var_dict = {name: value}
 
-        send_request("liebs-title-vars", var_dict)
+        send_request("liebs-title-vars", {
+            "title_tab_id": title_tab_id,
+            "variables": var_dict
+        })
         return ()
