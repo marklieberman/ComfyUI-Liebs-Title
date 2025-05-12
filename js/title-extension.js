@@ -192,7 +192,7 @@ broadcastChannel.addEventListener('message', (event) => {
             if (message.titleTabId === titleTabId) {
                 // Need to generate a new title tab ID.
                 titleTabId = generateTitleTabId();
-                sessionStorage.setItem(title_TAB_ID_KEY, titleTabId);
+                sessionStorage.setItem(TITLE_TAB_ID_KEY, titleTabId);
                 console.log('Generated a new title tab ID', titleTabId);
             }
     }
