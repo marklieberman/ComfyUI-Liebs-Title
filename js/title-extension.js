@@ -1,6 +1,10 @@
 import { app } from '../../scripts/app.js';
 import { api } from '../../scripts/api.js';
 
+const originalQueuePrompt = api.queuePrompt;
+const promptToPlaceholderMap = [];
+var lastRunningPrompt = null;
+
 /**
  * Generate a unique identifier using current millis and random.
  */
@@ -18,8 +22,54 @@ if (titleTabId) {
     sessionStorage.setItem(TITLE_TAB_ID_KEY, titleTabId);
 }
 
+/**
+ * Intercept prompt submissions and record the placeholder and variable associated with the prompt ID.
+ */
+api.queuePrompt = async function(graph, ...args) {
+    return originalQueuePrompt.apply(this, [graph, ...args]).then(data => {
+        promptToPlaceholderMap.unshift({
+            promptId: data.prompt_id,
+            placeholder: app.graph.extra.liebsTabTitleFormat,
+            variables:  app.graph.extra.liebsTabTitleVars
+        });
+        return data;
+    });
+};
+
+/**
+ * Monitor execution lifecycle events to keep track of the currently executing prompt ID.
+ */
+api.addEventListener("execution_start", (event) => {
+    lastRunningPrompt = event.detail.prompt_id;
+});
+function deletePromptFromPlaceholderMap(promptId) {
+    const index = promptToPlaceholderMap.findIndex(v => v.promptId !== promptId);
+    if (index >= 0) {
+        promptToPlaceholderMap.splice(index, 1);
+    }
+}
+api.addEventListener("execution_error", (event) => {
+    deletePromptFromPlaceholderMap(event.detail.prompt_id);
+    if (lastRunningPrompt == event.detail.prompt_id) {                
+        lastRunningPrompt = null;
+    }
+});
+api.addEventListener("execution_interrupted", (event) => {
+    deletePromptFromPlaceholderMap(event.detail.prompt_id);
+    if (lastRunningPrompt == event.detail.prompt_id) {
+        lastRunningPrompt = null
+    }    
+});
+api.addEventListener("execution_success", (event) => {
+    deletePromptFromPlaceholderMap(event.detail.prompt_id);
+    if (lastRunningPrompt == event.detail.prompt_id) {
+        lastRunningPrompt = null
+    }    
+});
+
 // Monitors the document title for changes.
 var observing = false;
+console.log('create mutation observer');
 const observer = new MutationObserver(function(mutations) {
     mutations.forEach(function(mutation) {        
         onDocumentTitleChanged(mutation.target.textContent);        
@@ -60,20 +110,24 @@ function onDocumentTitleChanged(title) {
 
 // Update the title using a placeholder format string.
 function doPlaceholderTitleUpdate(title) {
-    const placeholder = app.graph.extra.liebsTabTitleFormat;
-    if (placeholder) {
-        // Replace all variables in the format string.
-        lastTitle = placeholder.replaceAll('%title%', title);
-        const variables = app.graph.extra?.liebsTabTitleVars ?? {};
-        for (const name in variables) {
-            lastTitle = lastTitle.replaceAll(`%${name}%`, variables[name]);
-        }
+    const promptData = promptToPlaceholderMap.find(data => data.promptId === lastRunningPrompt),
+          placeholder = promptData
+                ? promptData.placeholder
+                : app.graph.extra.liebsTabTitleFormat,
+          variables = promptData 
+                ? promptData.variables 
+                : app.graph.extra.liebsTabTitleVars;
 
-        // Replace all unknown variables with (no value).
-        lastTitle = lastTitle.replace(/%[a-z0-9_]+%/ig, '(no value)');
-
-        document.title = lastTitle;
+    // Replace all variables in the format string.
+    lastTitle = placeholder.replaceAll('%title%', title);
+    for (const name in variables) {
+        lastTitle = lastTitle.replaceAll(`%${name}%`, variables[name]);
     }
+
+    // Replace all unknown variables with (no value).
+    lastTitle = lastTitle.replace(/%[a-z0-9_]+%/ig, '(no value)');
+
+    document.title = lastTitle;
 }
 
 // Set the new document title format.
