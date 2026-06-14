@@ -48,6 +48,10 @@ Capturing groups from the regular expression will be mapped to variables. Specif
 
 ## Changelog
 
+__1.0.6__
+
+* Properly fix variable updates when using multiple tabs in ComfyUI.
+
 __1.0.5__
 
 * Bug fixes

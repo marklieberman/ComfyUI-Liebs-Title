@@ -26,11 +26,13 @@ if (titleTabId) {
  * Intercept prompt submissions and record the placeholder and variable associated with the prompt ID.
  */
 api.queuePrompt = async function(graph, ...args) {
+    const placeholder = app.graph.extra.liebsTabTitleFormat;
+
     return originalQueuePrompt.apply(this, [graph, ...args]).then(data => {
         promptToPlaceholderMap.push({
             promptId: data.prompt_id,
-            placeholder: app.graph.extra.liebsTabTitleFormat,
-            variables: app.graph.extra.liebsTabTitleVars
+            placeholder,
+            variables: {}
         });
         return data;
     });
@@ -179,11 +181,11 @@ app.registerExtension({
                 return;
             }
 
-            if (!app.graph.extra.liebsTabTitleVars) {
-                app.graph.extra.liebsTabTitleVars = {};
+            // Assign the variables to the prompt-specific data.
+            const data = promptToPlaceholderMap.find(v => v.promptId === event.detail.prompt_id);
+            if (data) {
+                Object.assign(data.variables, detail.variables);
             }
-
-            Object.assign(app.graph.extra.liebsTabTitleVars, detail.variables);
             
             setTimeout(() => onDocumentTitleChanged(realTitle));
         });

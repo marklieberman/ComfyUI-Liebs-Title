@@ -1,5 +1,6 @@
 import re
 from server import PromptServer
+from comfy_execution.utils import get_executing_context
 
 class AnyType(str):
     def __ne__(self, __value: object) -> bool:
@@ -25,7 +26,7 @@ class LiebsTitleVar():
                 "regex": ("STRING",),
             },
             "hidden": {
-                "title_tab_id": ("STRING",)
+                "title_tab_id": ("STRING",),
             }
         }
 
@@ -64,8 +65,11 @@ class LiebsTitleVar():
         else:
             var_dict = {name: value}
 
+        ctx = get_executing_context()
+
         send_request("liebs-title-vars", {
             "title_tab_id": title_tab_id,
+            "prompt_id": ctx.prompt_id if ctx is not None else None,
             "variables": var_dict
         })
         return ()
