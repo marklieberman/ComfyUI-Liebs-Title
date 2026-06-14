@@ -27,10 +27,10 @@ if (titleTabId) {
  */
 api.queuePrompt = async function(graph, ...args) {
     return originalQueuePrompt.apply(this, [graph, ...args]).then(data => {
-        promptToPlaceholderMap.unshift({
+        promptToPlaceholderMap.push({
             promptId: data.prompt_id,
             placeholder: app.graph.extra.liebsTabTitleFormat,
-            variables:  app.graph.extra.liebsTabTitleVars
+            variables: app.graph.extra.liebsTabTitleVars
         });
         return data;
     });
@@ -43,33 +43,32 @@ api.addEventListener("execution_start", (event) => {
     lastRunningPrompt = event.detail.prompt_id;
 });
 function deletePromptFromPlaceholderMap(promptId) {
-    const index = promptToPlaceholderMap.findIndex(v => v.promptId !== promptId);
+    const index = promptToPlaceholderMap.findIndex(v => v.promptId === promptId);
     if (index >= 0) {
         promptToPlaceholderMap.splice(index, 1);
     }
 }
 api.addEventListener("execution_error", (event) => {
     deletePromptFromPlaceholderMap(event.detail.prompt_id);
-    if (lastRunningPrompt == event.detail.prompt_id) {                
+    if (lastRunningPrompt === event.detail.prompt_id) {                
         lastRunningPrompt = null;
     }
 });
 api.addEventListener("execution_interrupted", (event) => {
     deletePromptFromPlaceholderMap(event.detail.prompt_id);
-    if (lastRunningPrompt == event.detail.prompt_id) {
-        lastRunningPrompt = null
+    if (lastRunningPrompt === event.detail.prompt_id) {
+        lastRunningPrompt = null;
     }    
 });
 api.addEventListener("execution_success", (event) => {
     deletePromptFromPlaceholderMap(event.detail.prompt_id);
-    if (lastRunningPrompt == event.detail.prompt_id) {
-        lastRunningPrompt = null
+    if (lastRunningPrompt === event.detail.prompt_id) {
+        lastRunningPrompt = null;
     }    
 });
 
 // Monitors the document title for changes.
 var observing = false;
-console.log('create mutation observer');
 const observer = new MutationObserver(function(mutations) {
     mutations.forEach(function(mutation) {        
         onDocumentTitleChanged(mutation.target.textContent);        

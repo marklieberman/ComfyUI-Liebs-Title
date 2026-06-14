@@ -48,6 +48,10 @@ Capturing groups from the regular expression will be mapped to variables. Specif
 
 ## Changelog
 
+__1.0.5__
+
+* Bug fixes
+
 __1.0.4__
 
 * Use placeholder and variable at time of prompt submission. Fixes title changing when switching between tabs in ComfyUI.
