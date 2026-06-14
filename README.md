@@ -45,3 +45,13 @@ Capturing groups from the regular expression will be mapped to variables. Specif
 | `Make the shirt red - %title%` | Make the shirt red - [67%][67%] KSampler | While the prompt is running. |
 | `%prefix%:%title%` | Shirt:default - ComfyUI | `%prefix%` is provided by a `Set Tab Title Variable` node. |
 | `%color% - %garment% - %title%` | Red - TShirt - default - ComfyUI | `%color%` and `%garment%` are provided by a `Set Tab Title Variable` node. |
+
+## Changelog
+
+__1.0.4__
+
+* Use placeholder and variable at time of prompt submission. Fixes title changing when switching between tabs in ComfyUI.
+
+__1.0.0__
+
+* Intial release
